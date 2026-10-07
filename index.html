@@ -438,6 +438,7 @@ function tiles() {
     }
     return `<div class="tile"><span class="name">${l}</span><span class="ltv-label">LTV per subscriber</span><span class="ltv">${money(perSub, 2)}</span><div class="meter" aria-hidden="true"><i style="width:${Math.max(2, perSub / best * 100).toFixed(1)}%"></i></div>
       <div class="row"><span>LTV per buyer</span><strong>${money(b.avg, 0)}</strong></div>
+      ${v.untracked_revenue ? `<div class="row wait-note"><span>Not included: ${money(v.untracked_revenue)} of ${v.untracked_note} yet</span></div>` : ""}
       <div class="row"><span>Buyers</span><strong>${(b.buyers || 0).toLocaleString()}</strong></div>
       <div class="row"><span>Subscribers</span><strong>${v.subscribers.toLocaleString()}</strong></div></div>`;
   }).join("");
