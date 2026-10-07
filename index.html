@@ -7,7 +7,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&family=Geist+Mono:wght@400;500&display=swap">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
-/* Layout: one column. Four LTV tiles are the page; everything else folds away beneath them. Blue ink on a cool paper ground, navy at night. */
+/* Layout: one column. LTV tiles are the page; a short buyer section and one note sit below. Blue ink on a cool paper ground, navy at night. */
 :root {
   --bg: #f2f5fa;
   --bg-glow: #dfe8f7;
@@ -44,6 +44,7 @@
   color-scheme: dark;
 }
 * { box-sizing: border-box; }
+[hidden] { display: none !important; }
 html { scroll-behavior: smooth; }
 body {
   background: radial-gradient(1100px 520px at 12% -8%, var(--bg-glow), transparent 70%), var(--bg);
@@ -51,45 +52,40 @@ body {
   color: var(--ink); font-family: var(--body); font-size: 15px; line-height: 1.55;
   -webkit-font-smoothing: antialiased;
 }
-.wrap { max-width: 1120px; margin: 0 auto; padding-inline: 20px; padding-block: 40px 72px; display: grid; gap: 26px; }
+.wrap { max-width: 1120px; margin: 0 auto; padding-inline: 20px; padding-block: 40px 72px; display: grid; gap: 28px; }
 header { display: grid; gap: 8px; }
 .eyebrow { font: 500 13px var(--mono); color: var(--accent); letter-spacing: 0.02em; }
 h1 { font-family: var(--display); font-weight: 800; font-size: clamp(30px, 6vw, 46px); letter-spacing: -0.035em; margin: 0; line-height: 1; text-wrap: balance; }
+h2 { font-family: var(--display); font-weight: 650; font-size: 19px; margin: 0; letter-spacing: -0.015em; }
 .sub { color: var(--muted); margin: 0; max-width: 60ch; text-wrap: pretty; }
-.chips { display: flex; flex-wrap: wrap; gap: 6px; }
-.chip { font: 500 14px var(--body); border: 1px solid var(--rule); background: var(--panel); color: var(--ink); padding: 8px 14px; border-radius: 10px; cursor: pointer; transition: background .2s, border-color .2s, transform .1s; }
-.chip:hover { border-color: var(--accent); }
-.chip:active { transform: scale(0.97); }
-.chip[aria-pressed="true"] { background: var(--accent); color: #fff; border-color: var(--accent); }
-.chip:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1px; background: var(--rule); border: 1px solid var(--rule); border-radius: 14px; overflow: hidden; }
-.kpi { background: var(--panel); padding: 14px 16px; display: grid; gap: 2px; min-width: 0; }
-.kpi .label { font-size: 13px; color: var(--muted); }
-.kpi .value { font: 700 24px var(--display); letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
-.kpi .note { font-size: 12.5px; color: var(--muted); }
-section { display: grid; gap: 12px; min-width: 0; }
-h2 { font-family: var(--display); font-weight: 650; font-size: 18px; margin: 0; letter-spacing: -0.015em; }
-.lede { color: var(--muted); margin: 0; max-width: 68ch; font-size: 14px; }
-.panel { background: var(--panel); border: 1px solid var(--rule); border-radius: 14px; padding: 16px; min-width: 0; }
-.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px; }
-.chart { position: relative; height: 300px; }
-.chart.short { height: 210px; }
-.scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-table { border-collapse: collapse; width: 100%; font-variant-numeric: tabular-nums; font-size: 14px; }
-th, td { text-align: right; padding: 9px 10px; border-bottom: 1px solid var(--rule); white-space: nowrap; }
-tbody tr:last-child td { border-bottom: 0; }
-th { font-size: 12.5px; color: var(--muted); font-weight: 500; }
-th:first-child, td:first-child { text-align: left; }
-td.text { text-align: left; white-space: normal; min-width: 180px; }
-td.mono { font-family: var(--mono); font-size: 13px; }
-.pill { display: inline-block; font-size: 11.5px; padding: 1px 8px; border-radius: 6px; background: var(--amber-soft); color: var(--amber); font-weight: 500; }
-.pill.ok { background: var(--accent-soft); color: var(--accent-ink); }
-.bar { height: 6px; border-radius: 3px; background: var(--accent-soft); position: relative; min-width: 60px; }
-.bar > i { position: absolute; inset: 0 auto 0 0; background: var(--accent); border-radius: 3px; }
-.foot { color: var(--muted); font-size: 13px; max-width: 78ch; margin: 0; text-wrap: pretty; }
+section { display: grid; gap: 14px; min-width: 0; }
+.foot { color: var(--muted); font-size: 13.5px; max-width: 78ch; margin: 0; text-wrap: pretty; }
+.foot ul { margin: 6px 0 0; padding-left: 18px; display: grid; gap: 4px; }
 .foot strong { color: var(--ink); font-weight: 600; }
-.empty { color: var(--muted); padding: 24px; text-align: center; }
-[hidden] { display: none !important; }
+
+/* LTV tiles */
+.ltv-tiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+.tile { background: var(--panel); border: 1px solid var(--rule); border-radius: 18px; padding: 20px 20px 18px; display: grid; gap: 2px; align-content: start; min-width: 0; box-shadow: var(--shadow); transition: transform .25s cubic-bezier(.2,.8,.2,1); }
+.tile:hover { transform: translateY(-2px); }
+.tile .name { font: 650 16px var(--display); letter-spacing: -0.01em; }
+.tile .ltv-label { font-size: 13px; color: var(--muted); margin-top: 10px; }
+.tile .ltv { font: 800 clamp(30px, 4.4vw, 46px)/1 var(--display); letter-spacing: -0.04em; color: var(--accent); font-variant-numeric: tabular-nums; }
+.tile .meter { height: 4px; border-radius: 2px; background: var(--accent-soft); margin: 14px 0 8px; overflow: hidden; }
+.tile .meter > i { display: block; height: 100%; background: var(--accent); border-radius: 2px; }
+.tile .row { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; padding-top: 7px; font-size: 14px; font-variant-numeric: tabular-nums; }
+.tile .row span:first-child { color: var(--muted); }
+.tile .row strong { font-weight: 600; text-align: right; }
+.tile .sub-note { text-align: right; color: var(--muted); font-size: 12px; line-height: 1.3; }
+.tile .note { margin-top: 10px; padding: 8px 10px; border-radius: 10px; background: var(--amber-soft); color: var(--amber); font-size: 12.5px; line-height: 1.4; }
+
+/* buyer behaviour */
+.facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.fact { background: var(--panel); border: 1px solid var(--rule); border-radius: 16px; padding: 18px; box-shadow: var(--shadow); display: grid; gap: 10px; min-width: 0; }
+.fact p { margin: 0; font-size: 15.5px; line-height: 1.45; text-wrap: pretty; }
+.fact .num { font-weight: 700; color: var(--accent); font-variant-numeric: tabular-nums; }
+.chart { position: relative; height: 190px; }
+
+/* password screen */
 body.locked .wrap > :not(header):not(#lock) { display: none; }
 .lock { background: var(--panel); border: 1px solid var(--rule); border-radius: 18px; box-shadow: var(--shadow); padding: 22px; display: grid; gap: 10px; max-width: 460px; }
 .lock label[for="pw"] { font: 600 15px var(--display); }
@@ -100,75 +96,30 @@ body.locked .wrap > :not(header):not(#lock) { display: none; }
 .lock button:hover { filter: brightness(1.08); }
 .lock button:active { transform: scale(0.98); }
 .lock button:disabled { opacity: .6; cursor: wait; }
+.lock button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .remember { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--muted); }
 .lock-msg { margin: 0; font-size: 14px; color: var(--amber); min-height: 1.2em; }
-.stack { display: grid; gap: 14px; align-content: start; }
 
-/* LTV tiles */
-.ltv-tiles { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 14px; }
-@media (max-width: 1000px) { .ltv-tiles { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
-.tile { position: relative; background: var(--panel); border: 1px solid var(--rule); border-radius: 18px; padding: 20px 20px 18px; display: grid; gap: 2px; min-width: 0; box-shadow: var(--shadow); transition: transform .25s cubic-bezier(.2,.8,.2,1), box-shadow .25s; }
-.tile:hover { transform: translateY(-2px); }
-.tile .name { font: 600 15px var(--display); letter-spacing: -0.01em; }
-.tile .ltv-label { font-size: 13px; color: var(--muted); margin-top: 10px; }
-.tile .ltv { font: 800 clamp(30px, 4.4vw, 46px)/1 var(--display); letter-spacing: -0.04em; color: var(--accent); font-variant-numeric: tabular-nums; }
-.tile .meter { height: 4px; border-radius: 2px; background: var(--accent-soft); margin: 14px 0 6px; overflow: hidden; }
-.tile .meter > i { display: block; height: 100%; background: var(--accent); border-radius: 2px; }
-.tile .row { display: flex; justify-content: space-between; gap: 8px; padding-top: 6px; font-size: 14px; font-variant-numeric: tabular-nums; }
-.tile .row span:first-child { color: var(--muted); }
-.tile .row strong { font-weight: 600; }
-.tile .ltv-wait { color: var(--muted); }
-.tile .wait-note span { color: var(--muted); font-size: 13px; line-height: 1.4; }
-
-.takeaways { margin: 0; padding: 0; list-style: none; display: grid; gap: 10px; }
-.takeaways li { background: var(--panel-2); border: 1px solid var(--rule); border-radius: 12px; padding: 12px 16px; font-size: 15px; line-height: 1.5; max-width: 80ch; }
-.takeaways li strong { font-weight: 600; }
-.takeaways .num { font-weight: 650; color: var(--accent); font-variant-numeric: tabular-nums; }
-#scorecard td:first-child { font-weight: 600; }
-#scorecard .big { font: 650 17px var(--display); font-variant-numeric: tabular-nums; }
-#scorecard .dim { color: var(--muted); font-size: 12px; display: block; }
-.verdict { display: inline-block; font-size: 12px; font-weight: 600; padding: 2px 9px; border-radius: 6px; }
-.verdict.strong { background: var(--accent-soft); color: var(--accent-ink); }
-.verdict.early { background: var(--panel-2); color: var(--muted); border: 1px solid var(--rule); }
-.verdict.weak { background: var(--amber-soft); color: var(--amber); }
-
-/* folded sections */
-details.more { background: var(--panel); border: 1px solid var(--rule); border-radius: 16px; box-shadow: var(--shadow); transition: border-color .2s; }
-details.more:hover { border-color: color-mix(in srgb, var(--accent) 35%, var(--rule)); }
-details.more > summary { cursor: pointer; padding: 16px 18px; font: 600 16px var(--display); letter-spacing: -0.01em; list-style: none; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
-details.more > summary::-webkit-details-marker { display: none; }
-details.more > summary::after { content: ""; width: 9px; height: 9px; border-right: 2px solid var(--muted); border-bottom: 2px solid var(--muted); transform: rotate(45deg) translateY(-3px); transition: transform .25s; flex: none; }
-details.more[open] > summary::after { transform: rotate(-135deg) translateY(-1px); }
-details.more > summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 16px; }
-.more-body { padding: 2px 18px 18px; display: grid; gap: 20px; }
-.more-body .panel { background: var(--panel-2); }
-
-/* phones */
-@media (max-width: 620px) { .ltv-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 1000px) { .ltv-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 620px) { .facts { grid-template-columns: 1fr; } }
 @media (max-width: 520px) {
   body { font-size: 14.5px; }
-  .wrap { padding-inline: 16px; padding-block: 24px 48px; gap: 20px; }
+  .wrap { padding-inline: 16px; padding-block: 24px 48px; gap: 22px; }
   .ltv-tiles { gap: 10px; }
   .tile { padding: 14px 14px 12px; border-radius: 14px; }
   .tile .ltv { font-size: clamp(26px, 8.4vw, 34px); }
   .tile .row { font-size: 13px; }
-  .chart { height: 240px; }
-  .chart.short { height: 180px; }
-  .grid2 { grid-template-columns: 1fr; }
-  .more-body { padding: 2px 12px 14px; }
-  details.more > summary { padding: 14px; font-size: 15px; }
-  th, td { padding: 8px; }
+  .fact { padding: 14px; }
+  .fact p { font-size: 15px; }
 }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } html { scroll-behavior: auto; } }
 </style>
 
 <div class="wrap">
   <header>
-    <div>
-      <span class="eyebrow">Pegasus · Pocket ATM · HKU · Bunbun</span>
-      <h1>Email List LTV</h1>
-      <p class="sub">What an email subscriber is worth, based on the last 12 months of Vertex sales matched to the subscriber who clicked.</p>
-    </div>
+    <span class="eyebrow">Pegasus · Pocket ATM · HKU · Bunbun</span>
+    <h1>Email List LTV</h1>
+    <p class="sub">What an email subscriber is worth to us, from the last 12 months of affiliate sales.</p>
   </header>
 
   <form class="lock" id="lock" hidden autocomplete="on">
@@ -181,272 +132,101 @@ details.more > summary:focus-visible { outline: 2px solid var(--accent); outline
     <p class="lock-msg" id="lock-msg" role="status"></p>
   </form>
 
-  <section>
+  <section aria-label="LTV by list">
     <div class="ltv-tiles" id="tiles"></div>
-    <p class="foot"><strong>LTV per subscriber</strong> = revenue from the list's subscribers over the last 12 months ÷ everyone on the list. <strong>LTV per buyer</strong> = the same revenue ÷ people who bought. Covers Vertex sales from Oct 2025 (Vertex keeps 12 months). HKU counts ClickBank sales once their links carry the subscriber ID; refunds are subtracted.</p>
   </section>
 
-  <details class="more" data-group="list">
-    <summary>Look at one list in detail</summary>
-    <div class="more-body">
-      <div class="chips" role="group" aria-label="List" id="chips"></div>
-      <div class="kpis" id="kpis"></div>
-      <section>
-        <h2>Revenue per subscriber, by signup month</h2>
-        <p class="lede">Each line is the people who joined in one month: total revenue so far divided by how many joined. The All view shows months with 300+ signups.</p>
-        <div class="panel"><div class="chart"><canvas id="curves" aria-label="Revenue per subscriber by signup month"></canvas></div></div>
-      </section>
-      <section>
-        <h2>Signup months</h2>
-        <div class="panel scroll"><table id="cohorts"></table></div>
-        <p class="foot">Months marked <span class="pill">last 12 mo only</span> joined before sales history starts, so their figure is revenue since then, not lifetime.</p>
-      </section>
-    </div>
-  </details>
-
-  <details class="more" data-group="buyers">
-    <summary>Buyer behaviour and top buyers</summary>
-    <div class="more-body">
-      <section class="grid2">
-        <div class="panel">
-          <h2>New vs repeat buyer revenue</h2>
-          <p class="lede">Per month: money from someone's first purchase vs from people who had bought before.</p>
-          <div class="chart"><canvas id="nvr"></canvas></div>
-        </div>
-        <div class="panel stack">
-          <div>
-            <h2>Purchases per buyer</h2>
-            <div class="chart short"><canvas id="dist"></canvas></div>
-          </div>
-          <div>
-            <h2>Signup to first purchase</h2>
-            <p class="lede" id="d2f-note"></p>
-            <div class="chart short"><canvas id="d2f"></canvas></div>
-          </div>
-        </div>
-      </section>
-      <section>
-        <h2>Top buyers</h2>
-        <div class="panel scroll"><table id="top"></table></div>
-      </section>
-    </div>
-  </details>
-
-  <details class="more" data-group="notes">
-    <summary>What stands out</summary>
-    <div class="more-body">
-      <ul class="takeaways" id="takeaways"></ul>
-      <div class="panel scroll"><table id="scorecard"></table></div>
-    </div>
-  </details>
-
-  <details class="more" data-group="coverage">
-    <summary>How the data was matched</summary>
-    <div class="more-body">
-      <p class="lede">A sale counts once it is matched to the subscriber who clicked. Unmatched revenue is real money that just can't be credited to a person, so every figure on this page is a floor.</p>
-      <div class="grid2">
-        <div class="panel"><div class="chart"><canvas id="cov"></canvas></div></div>
-        <div class="panel scroll"><table id="methods"></table></div>
+  <section>
+    <h2>How subscribers buy</h2>
+    <div class="facts">
+      <div class="fact">
+        <p id="fact-repeat"></p>
+        <div class="chart"><canvas id="dist" aria-label="Purchases per buyer"></canvas></div>
       </div>
-      <p class="foot" id="method-note"></p>
+      <div class="fact">
+        <p id="fact-first"></p>
+        <div class="chart"><canvas id="d2f" aria-label="Days from signup to first purchase"></canvas></div>
+      </div>
     </div>
-  </details>
+  </section>
+
+  <div class="foot" id="foot"></div>
 </div>
 
 <script>
-const LISTS = ["All", "GetPegasus", "Pegasus (old)", "Pocket ATM", "HKU", "Bunbun"];
-const METHOD = {
-  subscriber_id: ["Subscriber ID in the link", "The link carried the subscriber's ID (s3 / sub3 / aff_sub3), so no matching was needed"],
-  none_clickbank: ["HKU ClickBank, no subscriber ID", "Sold before HKU links carried aff_sub3; ClickBank hides buyer details, so it can't be matched"],
-  time: ["Click time (±2s)", "AWeber and Vertex logged the same click within 2 seconds"],
-  time_loose: ["Click time (±60s)", "Only one subscriber clicked that email within a minute"],
-  "time+ip": ["Click time + IP", "Several clickers that second; IP picked the one seen on their other purchases"],
-  between_clicks: ["Repeat clicker", "Sale clicked between this subscriber's first and last click"],
-  ip_only: ["IP only", "Autoresponder or unknown email; IP belongs to one known buyer"],
-  event_of_matched: ["Upsell of matched sale", "Upsell on a sale already matched"],
-  ambiguous: ["Ambiguous", "Two or more subscribers clicked in the same second"],
-  none: ["Not matched", "No AWeber click lines up (autoresponder, forwarded email, members area, older click data)"],
-  event_unmatched: ["Upsell of unmatched sale", "Upsell on a sale that isn't matched"]
-};
+const NAMES = ["Pegasus", "Pocket ATM", "HKU", "Bunbun"];
+const NOTE = { Pegasus: "GetPegasus and the old Pegasus list combined; people on both are counted once." };
+const RELIABLE = 300;
 const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
 const money = (v, d = 0) => "$" + Number(v || 0).toLocaleString("en-US", { minimumFractionDigits: d, maximumFractionDigits: d });
 const pct = v => (v * 100).toFixed(v < 0.1 ? 1 : 0) + "%";
 let DATA = null, scope = "All", charts = {};
-try { scope = localStorage.getItem("ltv-scope") || "All"; } catch (e) {}
 
-function el(tag, attrs = {}, html = "") { const e = document.createElement(tag); Object.assign(e, attrs); if (html) e.innerHTML = html; return e; }
-
-function chips() {
-  const box = document.getElementById("chips"); box.innerHTML = "";
-  LISTS.filter(l => l === "All" || DATA.lists[l]).forEach(l => {
-    const b = el("button", { className: "chip", type: "button", textContent: l });
-    b.setAttribute("aria-pressed", l === scope);
-    b.onclick = () => { scope = l; try { localStorage.setItem("ltv-scope", l); } catch (e) {} render(); };
-    box.append(b);
-  });
+function newValue(v) {
+  if (v.untracked_revenue) return ["–", "waiting on ClickBank tracking"];
+  if (v.m3 != null && v.m3_subscribers >= RELIABLE) return [money(v.m3, 2), "first 3 months"];
+  if (v.m1 != null && v.m1_subscribers >= RELIABLE) return [money(v.m1, 2), "first month (too new for 3)"];
+  return ["–", "too few recent signups"];
 }
 
-function stats() { return scope === "All" ? DATA.overall : (DATA.lists[scope] || {}).buyer_stats; }
-
-function kpis() {
-  const s = stats() || {}, cov = DATA.coverage;
-  const subsN = scope === "All" ? Object.values(DATA.lists).reduce((a, l) => a + (l.subscribers || 0), 0) : DATA.lists[scope].subscribers;
-  const rev = s.revenue || 0;
-  const items = [
-    ["Revenue tied to subscribers", money(rev), scope === "All" ? pct(cov.matched_revenue / cov.total_revenue) + " of " + money(cov.total_revenue) + " total" : "since " + DATA.data_start],
-    ["Buyers", (s.buyers || 0).toLocaleString(), subsN ? pct((s.buyers || 0) / subsN) + " of " + subsN.toLocaleString() + " subscribers" : ""],
-    ["Revenue per buyer", money(s.avg, 2), "median " + money(s.median, 2)],
-    ["Repeat buyers", s.buyers ? pct(s.repeat_buyers / s.buyers) : "–", s.revenue ? pct(s.repeat_revenue / s.revenue) + " of buyer revenue" : ""],
-    ["Signup → first purchase", s.days_to_first && s.days_to_first.median != null ? s.days_to_first.median + " days" : "–", "median, cohorts since " + DATA.data_start]
-  ];
-  document.getElementById("kpis").innerHTML = items.map(([l, v, n]) => `<div class="kpi"><span class="label">${l}</span><span class="value">${v}</span><span class="note">${n}</span></div>`).join("");
+function tiles() {
+  const names = NAMES.filter(l => DATA.lists[l]);
+  const per = l => DATA.lists[l].subscribers ? DATA.lists[l].matched_revenue / DATA.lists[l].subscribers : 0;
+  const best = Math.max(...names.map(per), 0.01);
+  document.getElementById("tiles").innerHTML = names.map(l => {
+    const v = DATA.lists[l], b = v.buyer_stats || {}, [nv, nvNote] = newValue(v), ltv = per(l);
+    return `<article class="tile">
+      <span class="name">${l}</span>
+      <span class="ltv-label">LTV per subscriber, 12 months</span>
+      <span class="ltv">${money(ltv, 2)}</span>
+      <div class="meter" aria-hidden="true"><i style="width:${Math.max(2, ltv / best * 100).toFixed(1)}%"></i></div>
+      <div class="row"><span>New subscriber</span><strong>${nv}</strong></div><div class="sub-note">${nvNote}</div>
+      <div class="row"><span>Per buyer</span><strong>${b.avg ? money(b.avg) : "–"}</strong></div>
+      <div class="row"><span>Buyers</span><strong>${(b.buyers || 0).toLocaleString()}</strong></div>
+      <div class="row"><span>Joined</span><strong>${v.subscribers.toLocaleString()}</strong></div><div class="sub-note">${v.active.toLocaleString()} still subscribed</div>
+      ${v.untracked_revenue ? `<div class="note">Not counted yet: ${money(v.untracked_revenue)} of ClickBank sales. They'll count once HKU links carry the subscriber ID.</div>` : ""}
+      ${NOTE[l] ? `<p class="foot" style="margin-top:10px">${NOTE[l]}</p>` : ""}
+    </article>`;
+  }).join("");
 }
 
-function cohortRows() {
-  const out = [];
-  const lists = scope === "All" ? Object.keys(DATA.cohorts) : [scope];
-  lists.forEach(l => Object.entries(DATA.cohorts[l] || {}).forEach(([m, c]) => out.push({ list: l, month: m, ...c })));
-  return out.sort((a, b) => b.month.localeCompare(a.month) || a.list.localeCompare(b.list));
-}
-
-function cohortTable() {
-  const rows = cohortRows(), t = document.getElementById("cohorts");
-  if (!rows.length) { t.innerHTML = `<tr><td class="empty">No subscriber export for this list yet.</td></tr>`; return; }
-  const maxR = Math.max(...rows.map(r => r.rps), 0.01);
-  t.innerHTML = `<thead><tr><th>Signup month</th>${scope === "All" ? "<th>List</th>" : ""}<th>Subscribers</th><th>Buyers</th><th>Buyer rate</th><th>Revenue</th><th>Revenue / subscriber</th><th></th></tr></thead><tbody>` +
-    rows.map(r => `<tr><td class="mono">${r.month} ${r.full_history ? "" : '<span class="pill">last 12 mo only</span>'}</td>${scope === "All" ? `<td>${r.list}</td>` : ""}<td>${r.size.toLocaleString()}</td><td>${r.buyers}</td><td>${pct(r.buyers / r.size)}</td><td>${money(r.revenue)}</td><td><strong>${money(r.rps, 2)}</strong></td><td style="width:22%"><div class="bar"><i style="width:${(r.rps / maxR * 100).toFixed(1)}%"></i></div></td></tr>`).join("") + "</tbody>";
-}
-
-function palette(i) { return css("--c" + ((i % 8) + 1)); }
-function baseOpts(extra = {}) {
-  const ink = css("--ink"), muted = css("--muted"), rule = css("--rule");
+function baseOpts() {
   Chart.defaults.font.family = css("--body");
-  return Object.assign({
-    responsive: true, maintainAspectRatio: false, animation: false,
-    plugins: { legend: { labels: { color: ink, boxWidth: 12, boxHeight: 12 } }, tooltip: { mode: "index", intersect: false } },
-    scales: { x: { ticks: { color: muted }, grid: { color: rule } }, y: { ticks: { color: muted }, grid: { color: rule }, beginAtZero: true } }
-  }, extra);
+  return { responsive: true, maintainAspectRatio: false, animation: false,
+    plugins: { legend: { display: false }, tooltip: { intersect: false } },
+    scales: { x: { ticks: { color: css("--muted") }, grid: { display: false } },
+              y: { ticks: { color: css("--muted"), precision: 0 }, grid: { color: css("--rule") }, beginAtZero: true } } };
 }
 function draw(id, cfg) { if (charts[id]) charts[id].destroy(); charts[id] = new Chart(document.getElementById(id), cfg); }
 
-function curves() {
-  const rows = cohortRows().filter(r => r.full_history && r.curve.length && (scope !== "All" || r.size >= 300)).sort((a, b) => a.month.localeCompare(b.month));
-  const maxLen = Math.max(1, ...rows.map(r => r.curve.length));
-  const opts = baseOpts();
-  opts.scales.x.title = { display: true, text: "Months since signup", color: css("--muted") };
-  opts.scales.y.ticks.callback = v => "$" + v;
-  draw("curves", { type: "line", options: opts, data: {
-    labels: Array.from({ length: maxLen }, (_, i) => "M" + i),
-    datasets: rows.map((r, i) => ({ label: (scope === "All" ? r.list + " " : "") + r.month, data: r.curve, borderColor: palette(i), backgroundColor: palette(i), borderWidth: 2, pointRadius: 2.5, tension: 0.25 }))
-  }});
+function buyers() {
+  const o = DATA.overall || {};
+  const share = o.repeat_revenue / o.revenue;
+  document.getElementById("fact-repeat").innerHTML =
+    `<span class="num">1 in ${Math.round(o.buyers / o.repeat_buyers)}</span> buyers buy again, and those repeat buyers bring in <span class="num">${pct(share)}</span> of buyer revenue.`;
+  const d = o.dist || {};
+  draw("dist", { type: "bar", options: baseOpts(), data: { labels: ["1 purchase", "2", "3–4", "5+"],
+    datasets: [{ data: ["1", "2", "3–4", "5+"].map(x => d[x] || 0), backgroundColor: [css("--accent-soft"), css("--accent"), css("--accent"), css("--accent")], borderRadius: 6 }] } });
+  const f = o.days_to_first || {}, b = f.buckets || {}, order = ["0–1d", "2–7d", "8–30d", "31–90d", "90d+"];
+  const within30 = (b["0–1d"] || 0) + (b["2–7d"] || 0) + (b["8–30d"] || 0);
+  document.getElementById("fact-first").innerHTML =
+    `New subscribers who buy usually do it fast: half within <span class="num">${f.median} days</span> of joining, and <span class="num">${pct(within30 / (f.n || 1))}</span> within a month.`;
+  draw("d2f", { type: "bar", options: baseOpts(), data: { labels: ["Same day", "2–7 days", "8–30 days", "31–90 days", "90+ days"],
+    datasets: [{ data: order.map(x => b[x] || 0), backgroundColor: css("--accent"), borderRadius: 6 }] } });
 }
 
-function nvr() {
-  const src = DATA.new_vs_repeat[scope] || {}, months = Object.keys(src);
-  const opts = baseOpts(); opts.scales.x.stacked = opts.scales.y.stacked = true; opts.scales.y.ticks.callback = v => "$" + (v >= 1000 ? (v / 1000) + "k" : v);
-  draw("nvr", { type: "bar", options: opts, data: { labels: months, datasets: [
-    { label: "First purchase", data: months.map(m => src[m].new), backgroundColor: css("--accent") },
-    { label: "Repeat buyer", data: months.map(m => src[m].repeat), backgroundColor: css("--amber") }] } });
-}
-
-function small() {
-  const s = stats() || {};
-  const d = s.dist || {}, opts = baseOpts({ plugins: { legend: { display: false } } });
-  draw("dist", { type: "bar", options: opts, data: { labels: Object.keys(d).map(k => k + (k === "1" ? " purchase" : " purchases")), datasets: [{ data: Object.values(d), backgroundColor: [css("--accent"), css("--amber"), css("--amber"), css("--amber")] }] } });
-  const order = ["0–1d", "2–7d", "8–30d", "31–90d", "90d+"], b = (s.days_to_first || {}).buckets || {};
-  draw("d2f", { type: "bar", options: baseOpts({ plugins: { legend: { display: false } } }), data: { labels: order, datasets: [{ data: order.map(k => b[k] || 0), backgroundColor: css("--c2") }] } });
-  const n = (s.days_to_first || {}).n || 0;
-  document.getElementById("d2f-note").textContent = n ? `${n} buyers who joined since ${DATA.data_start}.` : "No buyers from recent cohorts yet.";
-}
-
-function topBuyers() {
-  const rows = DATA.top_buyers.filter(r => scope === "All" || r.list === scope).slice(0, 25);
-  document.getElementById("top").innerHTML = `<thead><tr><th>Subscriber</th>${scope === "All" ? "<th>List</th>" : ""}<th>Signed up</th><th>Purchases</th><th>Revenue</th><th>First</th><th>Last</th><th>Most bought</th><th>Status</th></tr></thead><tbody>` +
-    (rows.length ? rows.map(r => `<tr><td class="mono">${r.who}</td>${scope === "All" ? `<td>${r.list}</td>` : ""}<td class="mono">${r.signup}</td><td>${r.sales}</td><td><strong>${money(r.revenue)}</strong></td><td class="mono">${r.first}</td><td class="mono">${r.last}</td><td class="text">${r.top_offer}</td><td>${r.status === "subscribed" ? '<span class="pill ok">subscribed</span>' : `<span class="pill">${r.status || "–"}</span>`}</td></tr>`).join("") : `<tr><td class="empty" colspan="9">No matched buyers yet.</td></tr>`) + "</tbody>";
-}
-
-function coverage() {
-  const bm = DATA.coverage.by_month, months = Object.keys(bm);
-  const opts = baseOpts(); opts.scales.x.stacked = opts.scales.y.stacked = true; opts.scales.y.ticks.callback = v => "$" + (v >= 1000 ? (v / 1000) + "k" : v);
-  draw("cov", { type: "bar", options: opts, data: { labels: months, datasets: [
-    { label: "Tied to a subscriber", data: months.map(m => bm[m].matched), backgroundColor: css("--accent") },
-    { label: "Not tied", data: months.map(m => bm[m].total - bm[m].matched), backgroundColor: css("--rule") }] } });
-  const by = Object.entries(DATA.coverage.by_method).filter(([k]) => k !== "event_unmatched" || DATA.coverage.by_method[k].revenue > 0).sort((a, b) => b[1].revenue - a[1].revenue);
-  const tot = DATA.coverage.total_revenue;
-  document.getElementById("methods").innerHTML = `<thead><tr><th>How it was matched</th><th>Sales</th><th>Revenue</th><th>Share</th></tr></thead><tbody>` +
-    by.map(([k, v]) => `<tr><td class="text" title="${(METHOD[k] || [k, ""])[1]}">${(METHOD[k] || [k])[0]}<br><span class="foot">${(METHOD[k] || ["", ""])[1]}</span></td><td>${v.sales.toLocaleString()}</td><td>${money(v.revenue)}</td><td>${pct(v.revenue / tot)}</td></tr>`).join("") + "</tbody>";
-  document.getElementById("method-note").innerHTML = `Sales history starts <strong>${DATA.data_start}</strong> (Vertex keeps 12 months). Updated ${DATA.generated.replace("T", " ")} UTC. HKU's ClickBank sales count once their links carry the subscriber ID (aff_sub3); older ones can't be matched because ClickBank hides buyer details from affiliates.`;
-}
-
-const NAMES = ["GetPegasus", "Pegasus (old)", "Pocket ATM", "HKU", "Bunbun"];
-const RELIABLE = 300;
-function value(l) {
-  const v = DATA.lists[l] || {};
-  if (v.m3 != null && v.m3_subscribers >= RELIABLE) return { kind: "m3", amount: v.m3 };
-  if (v.m1 != null && v.m1_subscribers >= RELIABLE) return { kind: "m1", amount: v.m1 };
-  return { kind: "none" };
-}
-function verdict(l) {
-  const v = DATA.lists[l] || {}, val = value(l);
-  if (val.kind === "m3") return val.amount >= 10 ? ["strong", "Strong"] : val.amount >= 4 ? ["early", "OK"] : ["weak", "Weak"];
-  if (val.kind === "m1") return ["early", "Too new to call"];
-  if (v.older_subscribers > v.subscribers / 2 && (v.rps_older_12mo || 0) < 1) return ["weak", "Mostly dormant"];
-  return ["early", "Not enough data"];
-}
-function takeaways() {
-  const L = DATA.lists, o = DATA.overall, out = [];
-  const ranked = NAMES.filter(l => L[l] && value(l).kind === "m3").sort((a, b) => value(b).amount - value(a).amount);
-  if (ranked.length) {
-    const b = ranked[0], v = L[b];
-    out.push(`<strong>${b} is the best list by far.</strong> A new subscriber brings in about <span class="num">${money(v.m3)}</span> in their first 3 months, and about 1 in ${Math.round(1 / v.buyer_rate_recent)} of them buys.`);
-  }
-  if (L["Bunbun"] && value("Bunbun").kind === "m1" && L["GetPegasus"] && L["GetPegasus"].m1) {
-    out.push(`<strong>Bunbun is too new for a 3-month number.</strong> In their first month, its subscribers bring in <span class="num">${money(L["Bunbun"].m1, 2)}</span> each, against <span class="num">${money(L["GetPegasus"].m1, 2)}</span> for GetPegasus at the same point.`);
-  }
-  const p = L["Pocket ATM"];
-  if (p && p.older_subscribers) {
-    out.push(`<strong>Pocket ATM is big but mostly dormant.</strong> Its ${Math.round(p.older_subscribers / 1000)}k older subscribers brought in about <span class="num">${money(p.rps_older_12mo, 2)}</span> each over the last 12 months.`);
-  }
-  if (o && o.buyers) {
-    out.push(`<strong>About 1 in ${Math.round(o.buyers / o.repeat_buyers)} buyers buys again</strong>, and those repeat buyers account for <span class="num">${pct(o.repeat_revenue / o.revenue)}</span> of buyer revenue.`);
-  }
+function foot() {
   const c = DATA.coverage;
-  out.push(`These figures cover <span class="num">${pct(c.matched_revenue / c.total_revenue)}</span> of Vertex revenue from the last 12 months. The rest couldn't be tied to a subscriber, so real values are a little higher. HKU's older ClickBank sales can't be matched.`);
-  document.getElementById("takeaways").innerHTML = out.map(x => `<li>${x}</li>`).join("");
+  document.getElementById("foot").innerHTML = `<strong>How to read this</strong><ul>
+    <li><strong>LTV per subscriber</strong>: sales from a list over the last 12 months, divided by everyone who joined it (including people who later unsubscribed). Vertex only keeps 12 months of sales, so this is 12-month value, not lifetime.</li>
+    <li><strong>New subscriber value</strong>: what someone who joined in the last year brought in during their first 3 months. It's the best guide to what a new subscriber is worth today.</li>
+    <li>Figures cover <strong>${pct(c.matched_revenue / c.total_revenue)}</strong> of sales; the rest couldn't be tied to a subscriber, so real values are a little higher. Bunbun has about 2 months of history, so its numbers will rise.</li>
+    <li>Updated ${DATA.generated.slice(0, 10)}.</li></ul>`;
 }
-function scorecard() {
-  const rows = NAMES.filter(l => DATA.lists[l]);
-  const cell = (val, sub) => `<span class="big">${val}</span>${sub ? `<span class="dim">${sub}</span>` : ""}`;
-  document.getElementById("scorecard").innerHTML = `<thead><tr><th>List</th><th>Subscribers</th><th>New subscriber value</th><th>Buy rate</th><th>Per buyer</th><th>Older subscribers</th><th></th></tr></thead><tbody>` +
-    rows.map(l => {
-      const v = DATA.lists[l], val = value(l), b = v.buyer_stats || {}, [cls, word] = verdict(l);
-      const nv = val.kind === "m3" ? cell(money(val.amount, 2), "first 3 months") : val.kind === "m1" ? cell(money(val.amount, 2), "first month only") : cell("–", "too few new signups");
-      const br = val.kind === "m3" && v.buyer_rate_recent != null ? cell(pct(v.buyer_rate_recent), "of new subscribers") : val.kind === "m1" && b.buyers ? cell(pct(b.buyers / v.subscribers), "so far") : cell("–");
-      const older = v.older_subscribers >= 1000 ? cell(money(v.rps_older_12mo, 2), `each, last 12 mo (${Math.round(v.older_subscribers / 1000)}k people)`) : cell("–", "none");
-      return `<tr><td>${l}</td><td>${v.subscribers.toLocaleString()}</td><td>${nv}</td><td>${br}</td><td>${cell(money(b.avg), (b.buyers || 0).toLocaleString() + " buyers")}</td><td>${older}</td><td><span class="verdict ${cls}">${word}</span></td></tr>`;
-    }).join("") + "</tbody>";
-}
-function tiles() {
-  const per = l => DATA.lists[l].subscribers ? DATA.lists[l].matched_revenue / DATA.lists[l].subscribers : 0;
-  const best = Math.max(...NAMES.filter(l => DATA.lists[l]).map(per), 0.01);
-  document.getElementById("tiles").innerHTML = NAMES.filter(l => DATA.lists[l]).map(l => {
-    const v = DATA.lists[l], b = v.buyer_stats || {};
-    const perSub = per(l);
-    if (!v.matched_revenue) {
-      return `<div class="tile"><span class="name">${l}</span><span class="ltv-label">LTV per subscriber</span><span class="ltv ltv-wait">–</span><div class="meter" aria-hidden="true"><i style="width:0"></i></div>
-        <div class="row wait-note"><span>Waiting for the first sale with a subscriber ID in the link</span></div>
-        <div class="row"><span>Subscribers</span><strong>${v.subscribers.toLocaleString()}</strong></div></div>`;
-    }
-    return `<div class="tile"><span class="name">${l}</span><span class="ltv-label">LTV per subscriber</span><span class="ltv">${money(perSub, 2)}</span><div class="meter" aria-hidden="true"><i style="width:${Math.max(2, perSub / best * 100).toFixed(1)}%"></i></div>
-      <div class="row"><span>LTV per buyer</span><strong>${money(b.avg, 0)}</strong></div>
-      ${v.untracked_revenue ? `<div class="row wait-note"><span>Not included: ${money(v.untracked_revenue)} of ${v.untracked_note} yet</span></div>` : ""}
-      <div class="row"><span>Buyers</span><strong>${(b.buyers || 0).toLocaleString()}</strong></div>
-      <div class="row"><span>Subscribers</span><strong>${v.subscribers.toLocaleString()}</strong></div></div>`;
-  }).join("");
-}
-function render() { tiles(); takeaways(); scorecard(); chips(); kpis(); curves(); cohortTable(); nvr(); small(); topBuyers(); coverage(); }
 
-function start(d) { DATA = d; if (!LISTS.includes(scope) || (scope !== "All" && !d.lists[scope])) scope = "All"; document.body.classList.remove("locked"); document.getElementById("lock").hidden = true; render(); }
+function render() { tiles(); buyers(); foot(); }
+
+function start(d) { DATA = d; document.body.classList.remove("locked"); document.getElementById("lock").hidden = true; render(); }
 const b64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
 async function decrypt(pw) {
   const enc = await (await fetch("data.enc.json", { cache: "no-store" })).json();
@@ -483,7 +263,6 @@ document.getElementById("lock").addEventListener("submit", async e => {
   if (saved) { try { return start(await decrypt(saved)); } catch (_) { try { localStorage.removeItem("ltv-pw"); } catch (__) {} } }
   showLock();
 })();
-document.querySelectorAll("details.more").forEach(d => d.addEventListener("toggle", () => { if (d.open && DATA) render(); }));
 matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => DATA && render());
 new MutationObserver(() => DATA && render()).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
 </script>
