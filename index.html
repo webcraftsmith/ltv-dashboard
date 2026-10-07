@@ -105,7 +105,7 @@ body.locked .wrap > :not(header):not(#lock) { display: none; }
 .stack { display: grid; gap: 14px; align-content: start; }
 
 /* LTV tiles */
-.ltv-tiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+.ltv-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 14px; }
 .tile { position: relative; background: var(--panel); border: 1px solid var(--rule); border-radius: 18px; padding: 20px 20px 18px; display: grid; gap: 2px; min-width: 0; box-shadow: var(--shadow); transition: transform .25s cubic-bezier(.2,.8,.2,1), box-shadow .25s; }
 .tile:hover { transform: translateY(-2px); }
 .tile .name { font: 600 15px var(--display); letter-spacing: -0.01em; }
@@ -116,6 +116,8 @@ body.locked .wrap > :not(header):not(#lock) { display: none; }
 .tile .row { display: flex; justify-content: space-between; gap: 8px; padding-top: 6px; font-size: 14px; font-variant-numeric: tabular-nums; }
 .tile .row span:first-child { color: var(--muted); }
 .tile .row strong { font-weight: 600; }
+.tile .ltv-wait { color: var(--muted); }
+.tile .wait-note span { color: var(--muted); font-size: 13px; line-height: 1.4; }
 
 .takeaways { margin: 0; padding: 0; list-style: none; display: grid; gap: 10px; }
 .takeaways li { background: var(--panel-2); border: 1px solid var(--rule); border-radius: 12px; padding: 12px 16px; font-size: 15px; line-height: 1.5; max-width: 80ch; }
@@ -162,7 +164,7 @@ details.more > summary:focus-visible { outline: 2px solid var(--accent); outline
 <div class="wrap">
   <header>
     <div>
-      <span class="eyebrow">Pegasus · Pocket ATM · Bunbun</span>
+      <span class="eyebrow">Pegasus · Pocket ATM · HKU · Bunbun</span>
       <h1>Email List LTV</h1>
       <p class="sub">What an email subscriber is worth, based on the last 12 months of Vertex sales matched to the subscriber who clicked.</p>
     </div>
@@ -180,7 +182,7 @@ details.more > summary:focus-visible { outline: 2px solid var(--accent); outline
 
   <section>
     <div class="ltv-tiles" id="tiles"></div>
-    <p class="foot"><strong>LTV per subscriber</strong> = revenue from the list's subscribers over the last 12 months ÷ everyone on the list. <strong>LTV per buyer</strong> = the same revenue ÷ people who bought. Covers Vertex sales from Oct 2025 (Vertex keeps 12 months); HKU isn't included yet.</p>
+    <p class="foot"><strong>LTV per subscriber</strong> = revenue from the list's subscribers over the last 12 months ÷ everyone on the list. <strong>LTV per buyer</strong> = the same revenue ÷ people who bought. Covers Vertex sales from Oct 2025 (Vertex keeps 12 months). HKU counts ClickBank sales once their links carry the subscriber ID; refunds are subtracted.</p>
   </section>
 
   <details class="more" data-group="list">
@@ -251,8 +253,10 @@ details.more > summary:focus-visible { outline: 2px solid var(--accent); outline
 </div>
 
 <script>
-const LISTS = ["All", "GetPegasus", "Pegasus (old)", "Pocket ATM", "Bunbun"];
+const LISTS = ["All", "GetPegasus", "Pegasus (old)", "Pocket ATM", "HKU", "Bunbun"];
 const METHOD = {
+  subscriber_id: ["Subscriber ID in the link", "The link carried the subscriber's ID (s3 / sub3 / aff_sub3), so no matching was needed"],
+  none_clickbank: ["HKU ClickBank, no subscriber ID", "Sold before HKU links carried aff_sub3; ClickBank hides buyer details, so it can't be matched"],
   time: ["Click time (±2s)", "AWeber and Vertex logged the same click within 2 seconds"],
   time_loose: ["Click time (±60s)", "Only one subscriber clicked that email within a minute"],
   "time+ip": ["Click time + IP", "Several clickers that second; IP picked the one seen on their other purchases"],
@@ -370,10 +374,10 @@ function coverage() {
   const tot = DATA.coverage.total_revenue;
   document.getElementById("methods").innerHTML = `<thead><tr><th>How it was matched</th><th>Sales</th><th>Revenue</th><th>Share</th></tr></thead><tbody>` +
     by.map(([k, v]) => `<tr><td class="text" title="${(METHOD[k] || [k, ""])[1]}">${(METHOD[k] || [k])[0]}<br><span class="foot">${(METHOD[k] || ["", ""])[1]}</span></td><td>${v.sales.toLocaleString()}</td><td>${money(v.revenue)}</td><td>${pct(v.revenue / tot)}</td></tr>`).join("") + "</tbody>";
-  document.getElementById("method-note").innerHTML = `Sales history starts <strong>${DATA.data_start}</strong> (Vertex keeps 12 months). Updated ${DATA.generated.replace("T", " ")} UTC. HKU's ClickBank sales aren't included: ClickBank hides buyer details from affiliates, so they'll count once links carry the subscriber ID.`;
+  document.getElementById("method-note").innerHTML = `Sales history starts <strong>${DATA.data_start}</strong> (Vertex keeps 12 months). Updated ${DATA.generated.replace("T", " ")} UTC. HKU's ClickBank sales count once their links carry the subscriber ID (aff_sub3); older ones can't be matched because ClickBank hides buyer details from affiliates.`;
 }
 
-const NAMES = ["GetPegasus", "Pegasus (old)", "Pocket ATM", "Bunbun"];
+const NAMES = ["GetPegasus", "Pegasus (old)", "Pocket ATM", "HKU", "Bunbun"];
 const RELIABLE = 300;
 function value(l) {
   const v = DATA.lists[l] || {};
@@ -406,7 +410,7 @@ function takeaways() {
     out.push(`<strong>About 1 in ${Math.round(o.buyers / o.repeat_buyers)} buyers buys again</strong>, and those repeat buyers account for <span class="num">${pct(o.repeat_revenue / o.revenue)}</span> of buyer revenue.`);
   }
   const c = DATA.coverage;
-  out.push(`These figures cover <span class="num">${pct(c.matched_revenue / c.total_revenue)}</span> of Vertex revenue from the last 12 months. The rest couldn't be tied to a subscriber, so real values are a little higher. HKU isn't included yet.`);
+  out.push(`These figures cover <span class="num">${pct(c.matched_revenue / c.total_revenue)}</span> of Vertex revenue from the last 12 months. The rest couldn't be tied to a subscriber, so real values are a little higher. HKU's older ClickBank sales can't be matched.`);
   document.getElementById("takeaways").innerHTML = out.map(x => `<li>${x}</li>`).join("");
 }
 function scorecard() {
@@ -427,6 +431,11 @@ function tiles() {
   document.getElementById("tiles").innerHTML = NAMES.filter(l => DATA.lists[l]).map(l => {
     const v = DATA.lists[l], b = v.buyer_stats || {};
     const perSub = per(l);
+    if (!v.matched_revenue) {
+      return `<div class="tile"><span class="name">${l}</span><span class="ltv-label">LTV per subscriber</span><span class="ltv ltv-wait">–</span><div class="meter" aria-hidden="true"><i style="width:0"></i></div>
+        <div class="row wait-note"><span>Waiting for the first sale with a subscriber ID in the link</span></div>
+        <div class="row"><span>Subscribers</span><strong>${v.subscribers.toLocaleString()}</strong></div></div>`;
+    }
     return `<div class="tile"><span class="name">${l}</span><span class="ltv-label">LTV per subscriber</span><span class="ltv">${money(perSub, 2)}</span><div class="meter" aria-hidden="true"><i style="width:${Math.max(2, perSub / best * 100).toFixed(1)}%"></i></div>
       <div class="row"><span>LTV per buyer</span><strong>${money(b.avg, 0)}</strong></div>
       <div class="row"><span>Buyers</span><strong>${(b.buyers || 0).toLocaleString()}</strong></div>
