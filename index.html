@@ -105,7 +105,8 @@ body.locked .wrap > :not(header):not(#lock) { display: none; }
 .stack { display: grid; gap: 14px; align-content: start; }
 
 /* LTV tiles */
-.ltv-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 14px; }
+.ltv-tiles { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 14px; }
+@media (max-width: 1000px) { .ltv-tiles { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 .tile { position: relative; background: var(--panel); border: 1px solid var(--rule); border-radius: 18px; padding: 20px 20px 18px; display: grid; gap: 2px; min-width: 0; box-shadow: var(--shadow); transition: transform .25s cubic-bezier(.2,.8,.2,1), box-shadow .25s; }
 .tile:hover { transform: translateY(-2px); }
 .tile .name { font: 600 15px var(--display); letter-spacing: -0.01em; }
@@ -143,7 +144,7 @@ details.more > summary:focus-visible { outline: 2px solid var(--accent); outline
 .more-body .panel { background: var(--panel-2); }
 
 /* phones */
-@media (max-width: 860px) { .ltv-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 620px) { .ltv-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 520px) {
   body { font-size: 14.5px; }
   .wrap { padding-inline: 16px; padding-block: 24px 48px; gap: 20px; }
