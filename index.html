@@ -185,7 +185,7 @@ function tiles() {
   const names = NAMES.filter(l => DATA.lists[l]);
   document.getElementById("tiles").innerHTML = names.map(l => {
     const v = DATA.lists[l], b = v.buyer_stats || {}, [nv, nvNote] = newValue(v), hku = !!v.known;
-    const since = hku ? "since " + new Date(v.known.since + "T12:00:00Z").toLocaleDateString("en-US", { month: "short", day: "numeric" }) : "12 months";
+    const since = v.first_send ? "since first send, " + new Date(v.first_send + "T12:00:00Z").toLocaleDateString("en-US", { month: "short", day: "numeric" }) : "12 months";
     return `<article class="tile">
       <span class="name">${l}</span>
       <span class="ltv-label">Back-end LTV per front-end buyer</span>
@@ -230,7 +230,7 @@ function foot() {
     <li><strong>Back-end LTV per front-end buyer</strong>: all affiliate commission a list's emails made in the last 12 months, divided by every front-end customer on that list, whether they bought on the back end or not (including people who later unsubscribed). Vertex only keeps 12 months of sales, so this is 12-month value, not lifetime.</li>
     <li><strong>New customer value</strong>: what a customer who joined in the last year made us by email in their first 3 months. The best guide to what a customer bought today is worth.</li>
     <li><strong>Email buyers</strong>: customers we could match to an email purchase. About ${pct(1 - c.matched_revenue / c.total_revenue)} of sales couldn't be matched to a person, so these counts are a floor.</li>
-    <li>HKU covers ClickBank, Gotham, Vertex and WTS sales since its emails started on May 18. Bunbun has about 2 months of history.</li>
+    <li>HKU and Bunbun started emailing inside the last 12 months, so their figures run from their first send and will keep rising. HKU includes ClickBank, Gotham, Vertex and WTS sales.</li>
     <li>Updated ${DATA.generated.slice(0, 10)}.</li></ul>`;
 }
 
