@@ -188,7 +188,7 @@ function tiles() {
     const since = hku ? "since " + new Date(v.known.since + "T12:00:00Z").toLocaleDateString("en-US", { month: "short", day: "numeric" }) : "12 months";
     return `<article class="tile">
       <span class="name">${l}</span>
-      <span class="ltv-label">Back-end LTV per customer</span>
+      <span class="ltv-label">Back-end LTV per front-end buyer</span>
       <span class="ltv">${money(v.ltv_customer, 2)}</span>
       <div class="row"><span>Email revenue</span><strong>${money(v.email_revenue)}</strong></div><div class="sub-note">${since}</div>
       <div class="row"><span>Customers</span><strong>${v.subscribers.toLocaleString()}</strong></div><div class="sub-note">${v.active.toLocaleString()} still subscribed</div>
@@ -227,7 +227,7 @@ function buyers() {
 function foot() {
   const c = DATA.coverage;
   document.getElementById("foot").innerHTML = `<strong>How to read this</strong><ul>
-    <li><strong>Back-end LTV per customer</strong>: all affiliate commission a list's emails made in the last 12 months, divided by every front-end customer on that list, whether they bought on the back end or not (including people who later unsubscribed). Vertex only keeps 12 months of sales, so this is 12-month value, not lifetime.</li>
+    <li><strong>Back-end LTV per front-end buyer</strong>: all affiliate commission a list's emails made in the last 12 months, divided by every front-end customer on that list, whether they bought on the back end or not (including people who later unsubscribed). Vertex only keeps 12 months of sales, so this is 12-month value, not lifetime.</li>
     <li><strong>New customer value</strong>: what a customer who joined in the last year made us by email in their first 3 months. The best guide to what a customer bought today is worth.</li>
     <li><strong>Email buyers</strong>: customers we could match to an email purchase. About ${pct(1 - c.matched_revenue / c.total_revenue)} of sales couldn't be matched to a person, so these counts are a floor.</li>
     <li>HKU covers ClickBank, Gotham, Vertex and WTS sales since its emails started on May 18. Bunbun has about 2 months of history.</li>
