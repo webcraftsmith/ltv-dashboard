@@ -177,7 +177,7 @@ function buyerBlock(v, b) {
       <span class="sec-label">Customers who bought from email</span>
       <div class="row"><span>Email buyers</span><strong>${b.buyers.toLocaleString()}</strong></div><div class="sub-note">${pct(b.buyers / v.subscribers)} of front-end buyers</div>
       <div class="row"><span>Per email buyer</span><strong>${money(b.avg)}</strong></div>
-      <div class="row"><span>Bought again</span><strong>${pct(b.repeat_buyers / b.buyers)}</strong></div>
+      <div class="row"><span>Bought more than once</span><strong>${pct(b.repeat_buyers / b.buyers)}</strong></div>
     </div>`;
 }
 
