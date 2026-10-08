@@ -69,9 +69,7 @@ section { display: grid; gap: 14px; min-width: 0; }
 .tile:hover { transform: translateY(-2px); }
 .tile .name { font: 650 16px var(--display); letter-spacing: -0.01em; }
 .tile .ltv-label { font-size: 13px; color: var(--muted); margin-top: 10px; }
-.tile .ltv { font: 800 clamp(30px, 4.4vw, 46px)/1 var(--display); letter-spacing: -0.04em; color: var(--accent); font-variant-numeric: tabular-nums; }
-.tile .meter { height: 4px; border-radius: 2px; background: var(--accent-soft); margin: 14px 0 8px; overflow: hidden; }
-.tile .meter > i { display: block; height: 100%; background: var(--accent); border-radius: 2px; }
+.tile .ltv { margin-bottom: 10px; font: 800 clamp(30px, 4.4vw, 46px)/1 var(--display); letter-spacing: -0.04em; color: var(--accent); font-variant-numeric: tabular-nums; }
 .tile .row { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; padding-top: 7px; font-size: 14px; font-variant-numeric: tabular-nums; }
 .tile .row span:first-child { color: var(--muted); }
 .tile .row strong { font-weight: 600; text-align: right; }
@@ -173,8 +171,6 @@ function newValue(v) {
 
 function tiles() {
   const names = NAMES.filter(l => DATA.lists[l]);
-  const cust = l => (DATA.lists[l].buyer_stats || {}).avg || 0;
-  const best = Math.max(...names.map(cust), 0.01);
   document.getElementById("tiles").innerHTML = names.map(l => {
     const v = DATA.lists[l], b = v.buyer_stats || {}, [nv, nvNote] = newValue(v);
     const subLtv = v.subscribers ? v.matched_revenue / v.subscribers : 0;
@@ -182,7 +178,6 @@ function tiles() {
       <span class="name">${l}</span>
       <span class="ltv-label">Customer LTV</span>
       <span class="ltv">${b.avg ? money(b.avg) : "–"}</span>
-      <div class="meter" aria-hidden="true"><i style="width:${Math.max(2, cust(l) / best * 100).toFixed(1)}%"></i></div>
       <div class="row"><span>Customers</span><strong>${(b.buyers || 0).toLocaleString()}</strong></div>
       <div class="row"><span>Bought again</span><strong>${b.buyers ? pct(b.repeat_buyers / b.buyers) : "–"}</strong></div>
       <div class="row"><span>Purchases each</span><strong>${b.buyers ? (b.purchases / b.buyers).toFixed(2) : "–"}</strong></div>
