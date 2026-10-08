@@ -175,7 +175,7 @@ function buyerBlock(v, b) {
   if (!b.buyers) return "";
   return `<div class="secondary">
       <span class="sec-label">Customers who bought from email</span>
-      <div class="row"><span>Email buyers</span><strong>${b.buyers.toLocaleString()}</strong></div><div class="sub-note">${pct(b.buyers / v.subscribers)} of customers</div>
+      <div class="row"><span>Email buyers</span><strong>${b.buyers.toLocaleString()}</strong></div><div class="sub-note">${pct(b.buyers / v.subscribers)} of front-end buyers</div>
       <div class="row"><span>Per email buyer</span><strong>${money(b.avg)}</strong></div>
       <div class="row"><span>Bought again</span><strong>${pct(b.repeat_buyers / b.buyers)}</strong></div>
     </div>`;
