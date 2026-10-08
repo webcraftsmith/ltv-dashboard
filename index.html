@@ -180,7 +180,7 @@ function hkuTile(l, v) {
     <span class="ltv ltv-wait">Coming soon</span>
     <div class="secondary first">
       <span class="sec-label">What we know so far (since ${since})</span>
-      <div class="row"><span>Email revenue</span><strong>${money(k.revenue)}</strong></div>${k.wts_revenue ? `<div class="sub-note">ClickBank, Gotham, Vertex + ${money(k.wts_revenue)} WTS</div>` : ""}
+      <div class="row"><span>Email revenue</span><strong>${money(k.revenue)}</strong></div>
       <div class="row"><span>Sales</span><strong>${k.sales.toLocaleString()}</strong></div>${k.wts_revenue ? `<div class="sub-note">excl. WTS (sheet has revenue only)</div>` : ""}
       <div class="row"><span>Average per sale</span><strong>${money(k.avg_sale)}</strong></div>
       <div class="row"><span>Refunds</span><strong>${k.refund_rate != null ? pct(k.refund_rate) : "–"}</strong></div>
