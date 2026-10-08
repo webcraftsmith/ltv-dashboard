@@ -121,7 +121,7 @@ body.locked .wrap > :not(header):not(#lock) { display: none; }
 <div class="wrap">
   <header>
     <h1>Email List LTV</h1>
-    <p class="sub">What a customer from each email list is worth, from the last 12 months of affiliate sales.</p>
+    <p class="sub">How much each front-end customer makes us on the back end, through email.</p>
   </header>
 
   <form class="lock" id="lock" hidden autocomplete="on">
@@ -171,46 +171,29 @@ function newValue(v) {
   return ["–", "too few recent signups"];
 }
 
-// HKU: ClickBank doesn't say who bought, so show totals we do know until subscriber-ID tracking is live
-function hkuTile(l, v) {
-  const k = v.known, since = new Date(k.since + "T12:00:00Z").toLocaleDateString("en-US", { month: "short", day: "numeric" });
-  return `<article class="tile">
-    <span class="name">${l}</span>
-    <span class="ltv-label">Customer LTV</span>
-    <span class="ltv ltv-wait">Coming soon</span>
-    <div class="secondary first">
-      <span class="sec-label">What we know so far (since ${since})</span>
-      <div class="row"><span>Email revenue</span><strong>${money(k.revenue)}</strong></div>
-      <div class="row"><span>Sales</span><strong>${k.sales.toLocaleString()}</strong></div>${k.wts_revenue ? `<div class="sub-note">excl. WTS (sheet has revenue only)</div>` : ""}
-      <div class="row"><span>Average per sale</span><strong>${money(k.avg_sale)}</strong></div>
-      <div class="row"><span>Refunds</span><strong>${k.refund_rate != null ? pct(k.refund_rate) : "–"}</strong></div>
-      <div class="row"><span>Revenue per subscriber</span><strong>${money(k.per_subscriber, 2)}</strong></div>
-      <div class="row"><span>Joined</span><strong>${v.subscribers.toLocaleString()}</strong></div><div class="sub-note">${v.active.toLocaleString()} still subscribed</div>
-    </div>
-    <div class="note">Customer LTV, repeat buyers and purchases per customer will be added once customer LTV tracking is in place on HKU links.</div>
-  </article>`;
+function buyerBlock(v, b) {
+  if (!b.buyers) return "";
+  return `<div class="secondary">
+      <span class="sec-label">Customers who bought from email</span>
+      <div class="row"><span>Email buyers</span><strong>${b.buyers.toLocaleString()}</strong></div><div class="sub-note">${pct(b.buyers / v.subscribers)} of customers</div>
+      <div class="row"><span>Per email buyer</span><strong>${money(b.avg)}</strong></div>
+      <div class="row"><span>Bought again</span><strong>${pct(b.repeat_buyers / b.buyers)}</strong></div>
+    </div>`;
 }
 
 function tiles() {
   const names = NAMES.filter(l => DATA.lists[l]);
   document.getElementById("tiles").innerHTML = names.map(l => {
-    const v = DATA.lists[l], b = v.buyer_stats || {}, [nv, nvNote] = newValue(v);
-    if (v.known) return hkuTile(l, v);
-    const subLtv = v.subscribers ? v.matched_revenue / v.subscribers : 0;
+    const v = DATA.lists[l], b = v.buyer_stats || {}, [nv, nvNote] = newValue(v), hku = !!v.known;
+    const since = hku ? "since " + new Date(v.known.since + "T12:00:00Z").toLocaleDateString("en-US", { month: "short", day: "numeric" }) : "12 months";
     return `<article class="tile">
       <span class="name">${l}</span>
-      <span class="ltv-label">Customer LTV</span>
-      <span class="ltv">${b.avg ? money(b.avg) : "–"}</span>
-      <div class="row"><span>Customers</span><strong>${(b.buyers || 0).toLocaleString()}</strong></div>
-      <div class="row"><span>Bought again</span><strong>${b.buyers ? pct(b.repeat_buyers / b.buyers) : "–"}</strong></div>
-      <div class="row"><span>Purchases each</span><strong>${b.buyers ? (b.purchases / b.buyers).toFixed(2) : "–"}</strong></div>
-      <div class="secondary">
-        <span class="sec-label">Per email subscriber</span>
-        <div class="row"><span>Subscriber LTV</span><strong>${money(subLtv, 2)}</strong></div>
-        <div class="row"><span>New subscriber</span><strong>${nv}</strong></div><div class="sub-note">${nvNote}</div>
-        <div class="row"><span>Joined</span><strong>${v.subscribers.toLocaleString()}</strong></div><div class="sub-note">${v.active.toLocaleString()} still subscribed</div>
-      </div>
-      ${v.untracked_revenue ? `<div class="note">Not counted yet: ${money(v.untracked_revenue)} of ClickBank sales. They'll count once HKU links carry the subscriber ID.</div>` : ""}
+      <span class="ltv-label">Back-end LTV per customer</span>
+      <span class="ltv">${money(v.ltv_customer, 2)}</span>
+      <div class="row"><span>Email revenue</span><strong>${money(v.email_revenue)}</strong></div><div class="sub-note">${since}</div>
+      <div class="row"><span>Customers</span><strong>${v.subscribers.toLocaleString()}</strong></div><div class="sub-note">${v.active.toLocaleString()} still subscribed</div>
+      ${hku ? "" : `<div class="row"><span>New customer value</span><strong>${nv}</strong></div><div class="sub-note">${nvNote}</div>`}
+      ${hku ? `<div class="note">Email buyers, repeat buyers and new-customer value will be added once customer LTV tracking is in place on HKU links.</div>` : buyerBlock(v, b)}
       ${NOTE[l] ? `<p class="foot" style="margin-top:10px">${NOTE[l]}</p>` : ""}
     </article>`;
   }).join("");
@@ -236,7 +219,7 @@ function buyers() {
   const f = o.days_to_first || {}, b = f.buckets || {}, order = ["0–1d", "2–7d", "8–30d", "31–90d", "90d+"];
   const within30 = (b["0–1d"] || 0) + (b["2–7d"] || 0) + (b["8–30d"] || 0);
   document.getElementById("fact-first").innerHTML =
-    `New subscribers who buy usually do it fast: half within <span class="num">${f.median} days</span> of joining, and <span class="num">${pct(within30 / (f.n || 1))}</span> within a month.`;
+    `New customers who buy by email usually do it fast: half within <span class="num">${f.median} days</span> of joining, and <span class="num">${pct(within30 / (f.n || 1))}</span> within a month.`;
   draw("d2f", { type: "bar", options: baseOpts(), data: { labels: ["Same day", "2–7 days", "8–30 days", "31–90 days", "90+ days"],
     datasets: [{ data: order.map(x => b[x] || 0), backgroundColor: css("--accent"), borderRadius: 6 }] } });
 }
@@ -244,10 +227,10 @@ function buyers() {
 function foot() {
   const c = DATA.coverage;
   document.getElementById("foot").innerHTML = `<strong>How to read this</strong><ul>
-    <li><strong>Customer LTV</strong>: the average commission we earned from each person who bought, across all their purchases in the last 12 months. Vertex only keeps 12 months of sales, so this is 12-month value, not lifetime.</li>
-    <li><strong>Subscriber LTV</strong>: the same sales divided by everyone who joined the list, buyers or not (including people who later unsubscribed). <strong>New subscriber</strong> is what someone who joined in the last year brought in during their first 3 months.</li>
-    <li>HKU shows totals since its emails started (May 18) until customer LTV tracking is live on its links.</li>
-    <li>Figures cover <strong>${pct(c.matched_revenue / c.total_revenue)}</strong> of sales; the rest couldn't be tied to a subscriber, so real values are a little higher. Bunbun has about 2 months of history, so its numbers will rise.</li>
+    <li><strong>Back-end LTV per customer</strong>: all affiliate commission a list's emails made in the last 12 months, divided by every front-end customer on that list, whether they bought on the back end or not (including people who later unsubscribed). Vertex only keeps 12 months of sales, so this is 12-month value, not lifetime.</li>
+    <li><strong>New customer value</strong>: what a customer who joined in the last year made us by email in their first 3 months. The best guide to what a customer bought today is worth.</li>
+    <li><strong>Email buyers</strong>: customers we could match to an email purchase. About ${pct(1 - c.matched_revenue / c.total_revenue)} of sales couldn't be matched to a person, so these counts are a floor.</li>
+    <li>HKU covers ClickBank, Gotham, Vertex and WTS sales since its emails started on May 18. Bunbun has about 2 months of history.</li>
     <li>Updated ${DATA.generated.slice(0, 10)}.</li></ul>`;
 }
 
