@@ -193,7 +193,8 @@ function tiles() {
       <div class="row"><span>Email revenue</span><strong>${money(v.email_revenue)}</strong></div><div class="sub-note">${since}</div>
       <div class="row"><span>Customers</span><strong>${v.subscribers.toLocaleString()}</strong></div><div class="sub-note">${v.active.toLocaleString()} still subscribed</div>
       ${hku ? "" : `<div class="row"><span>New customer value</span><strong>${nv}</strong></div><div class="sub-note">${nvNote}</div>`}
-      ${hku ? `<div class="note">Email buyers, repeat buyers and new-customer value will be added once customer LTV tracking is in place on HKU links.</div>` : buyerBlock(v, b)}
+      ${buyerBlock(v, b)}
+      ${hku ? `<div class="note">Buyer figures are based on ${pct(v.matched_revenue / v.email_revenue)} of HKU revenue (Vertex/Gotham sales only). ClickBank sales will be added once they carry the subscriber ID.</div>` : ""}
       ${NOTE[l] ? `<p class="foot" style="margin-top:10px">${NOTE[l]}</p>` : ""}
     </article>`;
   }).join("");
